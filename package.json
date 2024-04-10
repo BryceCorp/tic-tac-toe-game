@@ -1,5 +1,5 @@
 {
-  "homepage": "http://brycecorp.github.io/tic-tac-toe-game",
+  "homepage": "https://brycecorp.github.io/tic-tac-toe-game",
   "name": "react-essentials-deep-dive-adv",
   "private": true,
   "version": "0.0.0",
@@ -13,7 +13,6 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "gh-pages": "^6.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -25,6 +24,7 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "gh-pages": "^6.1.1",
     "vite": "^4.4.5"
   }
 }
