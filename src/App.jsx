@@ -4,27 +4,25 @@ import GameBoard from "./components/GameBoard"
 import MoveLog from "./components/MoveLog"
 import GameOver from "./components/GameOver"
 import  { WINNING_CONDITIONS } from "./data/winning-conditions.js"
+import  { INITIAL_GAME_BOARD } from "./data/initial-board.js"
 
 import { useState } from "react"
 
-// const WINNING_CONDITIONS = [
-//   { row: 0, col: 0 },
-//   { row: 0, col: 1 },
-//   { row: 0, col: 2 },
-// ]
+const initialGameBoard = INITIAL_GAME_BOARD;
 
-const initialGameBoard = [
-  [null, null, null],
-  [null, null, null],
-  [null, null, null],
-];
+const basePlayer1Name = 'Naruto';
+const basePlayer2Name = 'Luffy';
 
 function App() {
 
   const [activePlayer, setActivePlayer] = useState('X');
   const [turnLog, setTurnLog] =  useState([]);
+  const [players, setPlayers] = useState({
+    X: [basePlayer1Name],
+    O: [basePlayer2Name]
+  });
 
-  let gameBoard = initialGameBoard;
+  let gameBoard = [...initialGameBoard.map(array => [...array])];
 
   for (const turn of turnLog){
     const { square, player } = turn;
@@ -41,9 +39,11 @@ function App() {
     const thirdSymbolCoordinate = gameBoard[winScenario[2].row][winScenario[2].column];
 
     if(firstSymbolCoordinate && firstSymbolCoordinate === secondSymbolCoordinate && firstSymbolCoordinate === thirdSymbolCoordinate){
-      winningPlayer = firstSymbolCoordinate;
+      winningPlayer = players[firstSymbolCoordinate];
     }
   }
+
+  const drawCondition = turnLog.length === 9 && !winningPlayer;
 
   function handleSelectSquare(rowIndex, columnIndex) {
     setActivePlayer(currentActivePlayer => (currentActivePlayer === 'X' ? 'O' : 'X'));
@@ -57,22 +57,52 @@ function App() {
     }); 
   }
 
+  function handlePlayerNameChange(symbol, updatedName){
+    setPlayers(prevPlayers => {
+      return {
+        ...prevPlayers,
+        [symbol]: updatedName
+      };
+    });
+  }
+
+  function resetGame() {
+    setActivePlayer('X')
+    setTurnLog([])
+  }
+
   return (
     <main>
       <Header/>
       <div id="game-container">
         <ol id="players" className="highlight-player">
-            <PlayerInfo name='Kratos' symbol='X' isActive={activePlayer === 'X'}/>
-            <PlayerInfo name='Naruto' symbol='O' isActive={activePlayer === 'O'}/>
+            <PlayerInfo 
+              name={basePlayer1Name} 
+              symbol='X' 
+              isActive={activePlayer === 'X'}
+              onChangeName={handlePlayerNameChange}
+              />
+            <PlayerInfo 
+              name={basePlayer2Name} 
+              symbol='O' 
+              isActive={activePlayer === 'O'}
+              onChangeName={handlePlayerNameChange}
+            />
         </ol>
         <GameBoard 
           onSelectSquare={handleSelectSquare} 
           baseBoard={gameBoard}
         />
-      {winningPlayer && <GameOver winningPlayer={winningPlayer}/>}
+      {(winningPlayer || drawCondition) && 
+        <GameOver 
+          winningPlayer={winningPlayer}
+          onRestart={resetGame}
+
+        />}
+        
+      <MoveLog turnLog={turnLog}/>
       </div>
       {console.log(winningPlayer, 'winner is')}
-      <MoveLog turnLog={turnLog}/>
     </main>
   )
 }
